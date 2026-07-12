@@ -1,0 +1,533 @@
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #FF6B8A;
+    --primary-dark: #E85577;
+    --secondary: #2C3E50;
+    --accent: #F1C40F;
+    --bg: #FFF5F7;
+    --text: #2C3E50;
+    --card: #FFFFFF;
+    --shadow: 0 8px 32px rgba(255, 107, 138, 0.15);
+    --radius: 20px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Loading Screen */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.8s;
+}
+
+#loading-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader {
+    text-align: center;
+}
+
+.heart-loader {
+    font-size: 4rem;
+    animation: heartbeat 1s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+/* App Container */
+#app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 16px 80px 16px;
+    position: relative;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    padding: 20px;
+    border-radius: 0 0 var(--radius) var(--radius);
+    margin: 0 -16px 20px -16px;
+    box-shadow: var(--shadow);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+header h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-stats {
+    display: flex;
+    gap: 16px;
+    font-size: 0.9rem;
+}
+
+.header-stats span {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* Navigation */
+.main-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: white;
+    padding: 8px;
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+}
+
+.nav-btn {
+    flex: 1;
+    min-width: fit-content;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    transition: all 0.3s;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.nav-btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 107, 138, 0.3);
+}
+
+.nav-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Pages */
+.page {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards */
+.welcome-card, .game-container, .garden-container {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+/* Home Page */
+.greeting h2 {
+    color: var(--primary);
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.love-message {
+    color: var(--secondary);
+    font-size: 1rem;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.daily-challenge, .garden-preview {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px solid #f0e6e9;
+}
+
+.daily-challenge h3, .garden-preview h3 {
+    color: var(--secondary);
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+/* Buttons */
+.btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 12px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 107, 138, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 138, 0.4);
+}
+
+.btn-secondary {
+    background: var(--secondary);
+    color: white;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* Word Game */
+.word-display {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.scrambled-word {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--primary);
+    margin-bottom: 12px;
+    font-family: 'Courier New', monospace;
+}
+
+.hint {
+    color: var(--secondary);
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.word-input-area {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.word-input-area input {
+    flex: 1;
+    padding: 14px;
+    border: 2px solid #e0d6d9;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.word-input-area input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.word-input-area button {
+    padding: 14px 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.word-input-area button:hover {
+    transform: scale(1.05);
+}
+
+.word-feedback {
+    text-align: center;
+    min-height: 40px;
+    font-weight: 500;
+    margin: 12px 0;
+}
+
+.word-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px;
+    background: #f8f0f3;
+    border-radius: 12px;
+    margin: 12px 0;
+}
+
+/* Sudoku */
+.sudoku-board {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 2px;
+    max-width: 400px;
+    margin: 0 auto;
+    background: #d0c6c9;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.sudoku-cell {
+    aspect-ratio: 1;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid #e0d6d9;
+}
+
+.sudoku-cell.given {
+    background: #f8f0f3;
+    color: var(--secondary);
+}
+
+.sudoku-cell.selected {
+    background: #ffe0e8;
+    border-color: var(--primary);
+}
+
+.sudoku-cell.user-filled {
+    color: var(--primary);
+}
+
+.sudoku-cell.correct {
+    background: #d4edda;
+}
+
+.sudoku-cell.wrong {
+    background: #f8d7da;
+}
+
+.number-pad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.number-pad button {
+    padding: 12px;
+    border: 2px solid #e0d6d9;
+    background: white;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.number-pad button:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Logic Game */
+.logic-puzzle {
+    padding: 20px;
+    background: #f8f0f3;
+    border-radius: 12px;
+    margin: 16px 0;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    line-height: 1.8;
+}
+
+.logic-input {
+    display: flex;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.logic-input input {
+    flex: 1;
+    padding: 14px;
+    border: 2px solid #e0d6d9;
+    border-radius: 12px;
+    font-size: 1rem;
+}
+
+.logic-input button {
+    padding: 14px 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Garden */
+.full-garden {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 20px 0;
+    min-height: 200px;
+}
+
+.garden-flower {
+    font-size: 2.5rem;
+    text-align: center;
+    animation: bloom 0.6s ease;
+}
+
+@keyframes bloom {
+    from { transform: scale(0) rotate(-180deg); }
+    to { transform: scale(1) rotate(0deg); }
+}
+
+.garden-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.stat-item {
+    background: #f8f0f3;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.stat-item span:not(.stat-icon) {
+    display: block;
+    font-weight: 600;
+}
+
+.love-letter {
+    background: linear-gradient(135deg, #fff5f7, #ffe0e8);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border-left: 4px solid var(--primary);
+}
+
+.love-letter h3 {
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+/* Easter Egg */
+#easter-egg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    animation: fadeIn 0.5s;
+}
+
+.egg-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 90%;
+}
+
+.egg-content h2 {
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+
+.egg-content button {
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+    .sudoku-cell {
+        font-size: 1rem;
+    }
+    
+    .scrambled-word {
+        font-size: 2rem;
+    }
+    
+    header h1 {
+        font-size: 1rem;
+    }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+          }
