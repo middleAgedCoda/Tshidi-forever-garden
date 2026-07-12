@@ -5,519 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tshidi's Forever Garden 🌸</title>
     <style>
-        /* ===== COMPLETE STYLES ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --primary: #FF6B8A;
-            --primary-dark: #E85577;
-            --secondary: #2C3E50;
-            --accent: #F1C40F;
-            --bg: #FFF5F7;
-            --text: #2C3E50;
-            --shadow: 0 8px 32px rgba(255, 107, 138, 0.15);
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding: 0 16px 80px 16px;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-        
-        /* Loading */
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.8s;
-        }
-        #loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .heart-loader {
-            font-size: 4rem;
-            animation: heartbeat 1s infinite;
-        }
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-        }
-        
-        /* Header */
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            padding: 20px;
-            border-radius: 0 0 20px 20px;
-            margin: 0 -16px 20px -16px;
-            box-shadow: var(--shadow);
-            color: white;
-        }
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        .header-stats {
-            display: flex;
-            gap: 16px;
-            font-size: 0.9rem;
-        }
-        .header-stats span {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-        }
-        
-        /* Navigation */
-        .main-nav {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background: white;
-            padding: 8px;
-            border-radius: 30px;
-            box-shadow: var(--shadow);
-        }
-        .nav-btn {
-            flex: 1;
-            padding: 10px 12px;
-            border: none;
-            background: transparent;
-            border-radius: 25px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-        .nav-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(255, 107, 138, 0.3);
-        }
-        .nav-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-        
-        /* Pages */
-        .page {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-        .page.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
-        
-        /* Buttons */
-        .btn-primary, .btn-secondary {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 12px;
-        }
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(255, 107, 138, 0.3);
-        }
-        .btn-primary:active {
-            transform: scale(0.95);
-        }
-        .btn-secondary {
-            background: var(--secondary);
-            color: white;
-        }
-        .btn-secondary:active {
-            transform: scale(0.95);
-        }
-        
-        /* Home */
-        .greeting h2 {
-            color: var(--primary);
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-        }
-        .love-message {
-            opacity: 0.8;
-            font-style: italic;
-            margin-bottom: 20px;
-        }
-        .daily-challenge, .garden-preview {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #f0e6e9;
-        }
-        .daily-challenge h3, .garden-preview h3 {
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-        }
-        
-        /* Word Game */
-        .word-display {
-            text-align: center;
-            padding: 30px 0;
-        }
-        .scrambled-word {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            color: var(--primary);
-            margin-bottom: 12px;
-            font-family: 'Courier New', monospace;
-        }
-        .hint {
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-        .word-input-area {
-            display: flex;
-            gap: 12px;
-            margin: 20px 0;
-        }
-        .word-input-area input {
-            flex: 1;
-            padding: 14px;
-            border: 2px solid #e0d6d9;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        .word-input-area input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .word-input-area button {
-            padding: 14px 24px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .word-input-area button:active {
-            transform: scale(0.95);
-        }
-        .word-feedback {
-            text-align: center;
-            min-height: 40px;
-            font-weight: 500;
-        }
-        .word-stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 12px;
-            background: #f8f0f3;
-            border-radius: 12px;
-            margin: 12px 0;
-        }
-        .word-stats span {
-            font-weight: 500;
-        }
-        
-        /* Sudoku */
-        .sudoku-board {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            gap: 2px;
-            max-width: 400px;
-            margin: 0 auto;
-            background: #d0c6c9;
-            padding: 4px;
-            border-radius: 8px;
-        }
-        .sudoku-cell {
-            aspect-ratio: 1;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid #e0d6d9;
-            transition: background 0.2s;
-        }
-        .sudoku-cell.given {
-            background: #f8f0f3;
-            color: var(--secondary);
-        }
-        .sudoku-cell.selected {
-            background: #ffe0e8;
-            border-color: var(--primary);
-        }
-        .sudoku-cell.user-filled {
-            color: var(--primary);
-        }
-        .sudoku-cell.correct {
-            background: #d4edda;
-        }
-        .sudoku-cell.wrong {
-            background: #f8d7da;
-        }
-        .number-pad {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin: 16px 0;
-        }
-        .number-pad button {
-            padding: 12px;
-            border: 2px solid #e0d6d9;
-            background: white;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .number-pad button:active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: scale(0.95);
-        }
-        #sudoku-feedback {
-            text-align: center;
-            min-height: 40px;
-            font-weight: 500;
-        }
-        
-        /* Logic */
-        .logic-puzzle {
-            padding: 20px;
-            background: #f8f0f3;
-            border-radius: 12px;
-            margin: 16px 0;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            text-align: center;
-        }
-        .logic-input {
-            display: flex;
-            gap: 12px;
-            margin: 16px 0;
-        }
-        .logic-input input {
-            flex: 1;
-            padding: 14px;
-            border: 2px solid #e0d6d9;
-            border-radius: 12px;
-            font-size: 1rem;
-        }
-        .logic-input input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .logic-input button {
-            padding: 14px 24px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .logic-input button:active {
-            transform: scale(0.95);
-        }
-        #logic-feedback {
-            text-align: center;
-            min-height: 40px;
-            font-weight: 500;
-        }
-        .logic-stats {
-            text-align: center;
-            padding: 12px;
-            background: #f8f0f3;
-            border-radius: 12px;
-            margin: 12px 0;
-        }
-        
-        /* Garden */
-        .garden-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            padding: 20px 0;
-            min-height: 200px;
-        }
-        .garden-flower {
-            font-size: 2.5rem;
-            text-align: center;
-            animation: bloom 0.6s ease;
-        }
-        @keyframes bloom {
-            from { transform: scale(0) rotate(-180deg); }
-            to { transform: scale(1) rotate(0deg); }
-        }
-        .garden-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin: 20px 0;
-        }
-        .stat-item {
-            background: #f8f0f3;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        .stat-icon {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .stat-item span:not(.stat-icon) {
-            display: block;
-            font-weight: 600;
-        }
-        .love-letter {
-            background: linear-gradient(135deg, #fff5f7, #ffe0e8);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border-left: 4px solid var(--primary);
-        }
-        .love-letter h3 {
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-        
-        /* Easter Egg */
-        #easter-egg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-        }
-        #easter-egg.show {
-            display: flex;
-        }
-        .egg-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 90%;
-        }
-        .egg-content h2 {
-            color: var(--primary);
-            font-size: 2rem;
-            margin-bottom: 12px;
-        }
-        .egg-content button {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        /* Level Badge */
-        .level-badge {
-            display: inline-block;
-            background: var(--accent);
-            color: var(--secondary);
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.8rem;
-        }
-        
-        /* Responsive */
-        @media (max-width: 400px) {
-            .sudoku-cell {
-                font-size: 1rem;
-            }
-            .scrambled-word {
-                font-size: 2rem;
-            }
-            header h1 {
-                font-size: 1rem;
-            }
-            .nav-btn {
-                font-size: 0.75rem;
-                padding: 8px;
-            }
-        }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
+        /* ===== ALL STYLES ===== */
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#FF6B8A;--primary-dark:#E85577;--secondary:#2C3E50;--accent:#F1C40F;--bg:#FFF5F7;--text:#2C3E50;--shadow:0 8px 32px rgba(255,107,138,0.15)}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 16px 80px 16px;max-width:480px;margin:0 auto}
+        #loading{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.8s}
+        #loading.hidden{opacity:0;pointer-events:none}
+        .heart-loader{font-size:4rem;animation:heartbeat 1s infinite}
+        @keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+        header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));padding:20px;border-radius:0 0 20px 20px;margin:0 -16px 20px -16px;box-shadow:var(--shadow);color:white}
+        .header-content{display:flex;justify-content:space-between;align-items:center}
+        header h1{font-size:1.2rem;font-weight:600}
+        .header-stats{display:flex;gap:16px;font-size:0.9rem}
+        .header-stats span{background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px}
+        .main-nav{display:flex;gap:8px;margin-bottom:20px;background:white;padding:8px;border-radius:30px;box-shadow:var(--shadow)}
+        .nav-btn{flex:1;padding:10px 8px;border:none;background:transparent;border-radius:25px;font-size:0.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.3s;white-space:nowrap}
+        .nav-btn.active{background:var(--primary);color:white;box-shadow:0 4px 12px rgba(255,107,138,0.3)}
+        .page{display:none;animation:fadeIn 0.4s ease}
+        .page.active{display:block}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .card{background:white;border-radius:20px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px}
+        .btn-primary,.btn-secondary{padding:12px 24px;border:none;border-radius:30px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;width:100%;margin-top:12px}
+        .btn-primary{background:var(--primary);color:white;box-shadow:0 4px 12px rgba(255,107,138,0.3)}
+        .btn-secondary{background:var(--secondary);color:white}
+        .btn-primary:active,.btn-secondary:active{transform:scale(0.95)}
+        .greeting h2{color:var(--primary);font-size:1.8rem;margin-bottom:8px}
+        .love-message{opacity:0.8;font-style:italic;margin-bottom:20px}
+        .daily-challenge,.garden-preview{margin-top:20px;padding-top:20px;border-top:2px solid #f0e6e9}
+        .daily-challenge h3,.garden-preview h3{margin-bottom:12px;font-size:1.1rem}
+        .word-display{text-align:center;padding:30px 0}
+        .scrambled-word{font-size:2.5rem;font-weight:700;letter-spacing:4px;color:var(--primary);margin-bottom:12px;font-family:'Courier New',monospace}
+        .hint{opacity:0.7;font-size:0.9rem}
+        .word-input-area{display:flex;gap:12px;margin:20px 0}
+        .word-input-area input{flex:1;padding:14px;border:2px solid #e0d6d9;border-radius:12px;font-size:1rem;transition:border-color 0.3s}
+        .word-input-area input:focus{outline:none;border-color:var(--primary)}
+        .word-input-area button{padding:14px 24px;background:var(--primary);color:white;border:none;border-radius:12px;font-weight:600;cursor:pointer}
+        .word-input-area button:active{transform:scale(0.95)}
+        .word-feedback{text-align:center;min-height:40px;font-weight:500}
+        .word-stats{display:flex;justify-content:space-around;padding:12px;background:#f8f0f3;border-radius:12px;margin:12px 0}
+        .word-stats span{font-weight:500}
+        .sudoku-board{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;max-width:400px;margin:0 auto;background:#d0c6c9;padding:4px;border-radius:8px}
+        .sudoku-cell{aspect-ratio:1;background:white;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:600;cursor:pointer;border:1px solid #e0d6d9;transition:background 0.2s}
+        .sudoku-cell.given{background:#f8f0f3;color:var(--secondary)}
+        .sudoku-cell.selected{background:#ffe0e8;border-color:var(--primary)}
+        .sudoku-cell.user-filled{color:var(--primary)}
+        .sudoku-cell.correct{background:#d4edda}
+        .sudoku-cell.wrong{background:#f8d7da}
+        .number-pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}
+        .number-pad button{padding:12px;border:2px solid #e0d6d9;background:white;border-radius:12px;font-size:1.2rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+        .number-pad button:active{background:var(--primary);color:white;border-color:var(--primary);transform:scale(0.95)}
+        #sudoku-feedback{text-align:center;min-height:40px;font-weight:500}
+        .logic-puzzle{padding:20px;background:#f8f0f3;border-radius:12px;margin:16px 0;min-height:100px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;line-height:1.8;text-align:center}
+        .logic-input{display:flex;gap:12px;margin:16px 0}
+        .logic-input input{flex:1;padding:14px;border:2px solid #e0d6d9;border-radius:12px;font-size:1rem}
+        .logic-input input:focus{outline:none;border-color:var(--primary)}
+        .logic-input button{padding:14px 24px;background:var(--primary);color:white;border:none;border-radius:12px;font-weight:600;cursor:pointer}
+        .logic-input button:active{transform:scale(0.95)}
+        #logic-feedback{text-align:center;min-height:40px;font-weight:500}
+        .logic-stats{text-align:center;padding:12px;background:#f8f0f3;border-radius:12px;margin:12px 0}
+        .garden-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 0;min-height:200px}
+        .garden-flower{font-size:2.5rem;text-align:center;animation:bloom 0.6s ease}
+        @keyframes bloom{from{transform:scale(0) rotate(-180deg)}to{transform:scale(1) rotate(0deg)}}
+        .garden-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+        .stat-item{background:#f8f0f3;padding:16px;border-radius:12px;text-align:center}
+        .stat-icon{font-size:2rem;display:block;margin-bottom:4px}
+        .stat-item span:not(.stat-icon){display:block;font-weight:600}
+        .love-letter{background:linear-gradient(135deg,#fff5f7,#ffe0e8);padding:20px;border-radius:12px;margin-top:20px;border-left:4px solid var(--primary)}
+        .love-letter h3{color:var(--primary);margin-bottom:8px}
+        #easter-egg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:999}
+        #easter-egg.show{display:flex}
+        .egg-content{background:white;padding:40px;border-radius:20px;text-align:center;max-width:90%}
+        .egg-content h2{color:var(--primary);font-size:2rem;margin-bottom:12px}
+        .egg-content button{margin-top:20px;padding:12px 30px;background:var(--primary);color:white;border:none;border-radius:30px;font-weight:600;cursor:pointer}
+        .level-badge{display:inline-block;background:var(--accent);color:var(--secondary);padding:2px 12px;border-radius:20px;font-weight:700;font-size:0.8rem}
+        @media(max-width:400px){.sudoku-cell{font-size:1rem}.scrambled-word{font-size:2rem}header h1{font-size:1rem}.nav-btn{font-size:0.7rem;padding:6px}}
+        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#f1f1f1}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:10px}
     </style>
 </head>
 <body>
 
-<!-- ===== LOADING SCREEN ===== -->
+<!-- LOADING -->
 <div id="loading">
     <div class="heart-loader">💗</div>
-    <p style="margin-top: 16px;">Growing love for Tshidi...</p>
+    <p style="margin-top:16px;">Growing love for Tshidi...</p>
 </div>
 
-<!-- ===== MAIN APP ===== -->
+<!-- APP -->
 <div id="app">
 
     <!-- HEADER -->
@@ -531,7 +104,7 @@
         </div>
     </header>
 
-    <!-- NAVIGATION -->
+    <!-- NAV -->
     <nav class="main-nav">
         <button class="nav-btn active" data-page="home">🏠 Home</button>
         <button class="nav-btn" data-page="word">📝 Words</button>
@@ -540,7 +113,7 @@
         <button class="nav-btn" data-page="garden">🌺 Garden</button>
     </nav>
 
-    <!-- ===== HOME PAGE ===== -->
+    <!-- HOME -->
     <section id="home" class="page active">
         <div class="card">
             <div class="greeting">
@@ -554,16 +127,16 @@
             </div>
             <div class="garden-preview">
                 <h3>🌺 Our Garden</h3>
-                <div id="mini-garden" class="garden-grid" style="grid-template-columns: repeat(4, 1fr);"></div>
+                <div id="mini-garden" class="garden-grid" style="grid-template-columns:repeat(4,1fr);"></div>
                 <button class="btn-secondary" onclick="navigateTo('garden')">View Full Garden</button>
             </div>
         </div>
     </section>
 
-    <!-- ===== WORD MODE ===== -->
+    <!-- WORD -->
     <section id="word" class="page">
         <div class="card">
-            <div class="game-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h2 style="color:var(--primary);">📝 Word Blossom</h2>
                 <span class="level-badge">Level <span id="word-level">1</span></span>
             </div>
@@ -584,15 +157,15 @@
         </div>
     </section>
 
-    <!-- ===== NUMBERS MODE (Sudoku) ===== -->
+    <!-- NUMBERS -->
     <section id="numbers" class="page">
         <div class="card">
-            <div class="game-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h2 style="color:var(--primary);">🔢 Number Garden</h2>
                 <span class="level-badge">Level <span id="num-level">1</span></span>
             </div>
             <div id="sudoku-board" class="sudoku-board"></div>
-            <div class="number-pad" id="number-pad">
+            <div class="number-pad">
                 <button onclick="fillNumber(1)">1</button>
                 <button onclick="fillNumber(2)">2</button>
                 <button onclick="fillNumber(3)">3</button>
@@ -609,10 +182,10 @@
         </div>
     </section>
 
-    <!-- ===== LOGIC MODE ===== -->
+    <!-- LOGIC -->
     <section id="logic" class="page">
         <div class="card">
-            <div class="game-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h2 style="color:var(--primary);">🧠 Logic Petals</h2>
                 <span class="level-badge">Level <span id="logic-level">1</span></span>
             </div>
@@ -629,11 +202,11 @@
         </div>
     </section>
 
-    <!-- ===== GARDEN PAGE ===== -->
+    <!-- GARDEN -->
     <section id="garden" class="page">
         <div class="card">
             <h2 style="color:var(--primary);">🌺 Tshidi's Love Garden</h2>
-            <p class="garden-subtitle" style="opacity:0.7; margin:8px 0;">Every puzzle solved blooms a new flower</p>
+            <p style="opacity:0.7;margin:8px 0;">Every puzzle solved blooms a new flower</p>
             <div id="full-garden" class="garden-grid"></div>
             <div class="garden-stats">
                 <div class="stat-item">
@@ -649,13 +222,13 @@
             </div>
             <div class="love-letter">
                 <h3>💌 A Love Note</h3>
-                <p id="love-note">Every puzzle you solve brings us closer. You're my greatest adventure, Tshidi. Forever and always. ❤️</p>
+                <p id="love-note">Every puzzle you solve brings us closer. You're my greatest adventure, Tshidi. ❤️</p>
             </div>
         </div>
     </section>
 </div>
 
-<!-- ===== EASTER EGG ===== -->
+<!-- EASTER EGG -->
 <div id="easter-egg">
     <div class="egg-content">
         <h2>💖 I Love You, Tshidi!</h2>
@@ -665,7 +238,7 @@
 </div>
 
 <!-- ============================================ -->
-<!-- ===== COMPLETE JAVASCRIPT ===== -->
+<!-- ALL JAVASCRIPT IN ONE FILE - NO EXTERNAL DEPS -->
 <!-- ============================================ -->
 <script>
 // =============================================
@@ -726,7 +299,7 @@ let state = {
 // =============================================
 function loadState() {
     try {
-        const saved = localStorage.getItem('tshidiGardenFull');
+        const saved = localStorage.getItem('tshidiGarden');
         if (saved) {
             const parsed = JSON.parse(saved);
             Object.assign(state, parsed);
@@ -736,7 +309,7 @@ function loadState() {
 
 function saveState() {
     try {
-        localStorage.setItem('tshidiGardenFull', JSON.stringify(state));
+        localStorage.setItem('tshidiGarden', JSON.stringify(state));
     } catch(e) { console.log('Could not save'); }
 }
 
@@ -745,12 +318,13 @@ function saveState() {
 // =============================================
 function navigateTo(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(page).classList.add('active');
+    const target = document.getElementById(page);
+    if (target) target.classList.add('active');
     
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector(`.nav-btn[data-page="${page}"]`).classList.add('active');
+    const btn = document.querySelector(`.nav-btn[data-page="${page}"]`);
+    if (btn) btn.classList.add('active');
     
-    // Initialize game modes when navigated
     if (page === 'word') initWordMode();
     if (page === 'numbers') initSudoku();
     if (page === 'logic') initLogicMode();
@@ -761,19 +335,32 @@ function navigateTo(page) {
 // WORD MODE
 // =============================================
 function initWordMode() {
-    document.getElementById('word-level').textContent = Math.floor(state.scores.word / 100) + 1;
+    const level = document.getElementById('word-level');
+    if (level) level.textContent = Math.floor(state.scores.word / 100) + 1;
     document.getElementById('word-score').textContent = state.scores.word;
     document.getElementById('word-found').textContent = state.word.found;
     document.getElementById('word-total').textContent = WORDS.length;
     getNewWord();
 }
 
+function shuffleWord(word) {
+    const arr = word.split('');
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.join('');
+}
+
 function getNewWord() {
     const available = WORDS.filter((_, i) => !state.word.used.includes(i));
     if (available.length === 0) {
         state.word.used = [];
-        document.getElementById('word-feedback').textContent = '🎉 You found all words! Starting again!';
-        document.getElementById('word-feedback').style.color = '#28a745';
+        const fb = document.getElementById('word-feedback');
+        if (fb) {
+            fb.textContent = '🎉 You found all words! Starting again!';
+            fb.style.color = '#28a745';
+        }
         setTimeout(() => getNewWord(), 2000);
         return;
     }
@@ -789,15 +376,6 @@ function getNewWord() {
     document.getElementById('word-input').value = '';
     document.getElementById('word-input').focus();
     document.getElementById('word-feedback').textContent = '';
-}
-
-function shuffleWord(word) {
-    const arr = word.split('');
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr.join('');
 }
 
 function checkWord() {
@@ -844,7 +422,6 @@ function initSudoku() {
 }
 
 function generateSudoku() {
-    // Simple valid puzzle generator
     const base = [
         [5,3,4,6,7,8,9,1,2],
         [6,7,2,1,9,5,3,4,8],
@@ -858,9 +435,8 @@ function generateSudoku() {
     ];
     
     const puzzle = base.map(row => [...row]);
-    const cellsToRemove = 40;
     let removed = 0;
-    while (removed < cellsToRemove) {
+    while (removed < 40) {
         const row = Math.floor(Math.random() * 9);
         const col = Math.floor(Math.random() * 9);
         if (puzzle[row][col] !== 0) {
@@ -877,7 +453,6 @@ function newSudoku() {
     state.sudoku.solution = data.solution;
     state.sudoku.selected = null;
     state.sudoku.errors = 0;
-    
     renderSudoku();
     document.getElementById('sudoku-feedback').textContent = '';
 }
@@ -899,21 +474,16 @@ function renderSudoku() {
                 cell.classList.add('given');
             }
             
-            cell.addEventListener('click', () => selectSudokuCell(row, col));
+            cell.addEventListener('click', () => {
+                if (state.sudoku.board[row][col] !== 0) return;
+                document.querySelectorAll('.sudoku-cell.selected').forEach(el => el.classList.remove('selected'));
+                state.sudoku.selected = { row, col };
+                cell.classList.add('selected');
+            });
+            
             board.appendChild(cell);
         }
     }
-}
-
-function selectSudokuCell(row, col) {
-    if (state.sudoku.board[row][col] !== 0) return;
-    
-    document.querySelectorAll('.sudoku-cell.selected').forEach(el => el.classList.remove('selected'));
-    state.sudoku.selected = { row, col };
-    
-    const cells = document.querySelectorAll('.sudoku-cell');
-    const index = row * 9 + col;
-    cells[index].classList.add('selected');
 }
 
 function fillNumber(num) {
@@ -932,9 +502,8 @@ function fillNumber(num) {
         
         if (isSudokuComplete()) {
             document.getElementById('sudoku-feedback').textContent = '🎉 Amazing, Tshidi! You solved it!';
-            const points = 100;
-            state.scores.number += points;
-            state.scores.total += points;
+            state.scores.number += 100;
+            state.scores.total += 100;
             addFlower();
             updateUI();
             saveState();
@@ -983,8 +552,11 @@ function newLogic() {
     const available = LOGIC_PUZZLES.filter((_, i) => !state.logic.used.includes(i));
     if (available.length === 0) {
         state.logic.used = [];
-        document.getElementById('logic-feedback').textContent = '🎉 You solved all puzzles! Starting again!';
-        document.getElementById('logic-feedback').style.color = '#28a745';
+        const fb = document.getElementById('logic-feedback');
+        if (fb) {
+            fb.textContent = '🎉 You solved all puzzles! Starting again!';
+            fb.style.color = '#28a745';
+        }
         setTimeout(() => newLogic(), 2000);
         return;
     }
@@ -1018,12 +590,11 @@ function checkLogic() {
     }
     
     if (answer === state.logic.current.answer.toLowerCase()) {
-        const points = 50;
-        state.scores.logic += points;
-        state.scores.total += points;
+        state.scores.logic += 50;
+        state.scores.total += 50;
         state.streak++;
         
-        feedback.textContent = `🧠 Brilliant, Tshidi! +${points} points!`;
+        feedback.textContent = '🧠 Brilliant, Tshidi! +50 points!';
         feedback.style.color = '#28a745';
         
         addFlower();
@@ -1048,53 +619,19 @@ function addFlower() {
     state.garden.flowers.push(flower);
     state.garden.totalBloomed++;
     
-    // Celebration for milestones
     if (state.garden.totalBloomed % 5 === 0) {
         setTimeout(() => {
-            const messages = [
+            const msgs = [
                 '🌸 5 Flowers! You\'re blooming, Tshidi!',
-                '🌺 10 Flowers! Our garden is growing with love!',
+                '🌺 10 Flowers! Our garden is growing!',
                 '🌻 15 Flowers! You make my heart full!',
                 '🌹 20 Flowers! Forever growing, forever loving!',
                 '💐 25 Flowers! Tshidi, you\'re incredible!'
             ];
-            const idx = Math.min(Math.floor(state.garden.totalBloomed / 5) - 1, messages.length - 1);
-            showCelebration(messages[idx]);
+            const idx = Math.min(Math.floor(state.garden.totalBloomed / 5) - 1, msgs.length - 1);
+            alert(msgs[idx]);
         }, 300);
     }
-}
-
-function showCelebration(message) {
-    const popup = document.createElement('div');
-    popup.style.cssText = `
-        position: fixed;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        z-index: 999;
-        text-align: center;
-        max-width: 90%;
-        animation: fadeIn 0.5s ease;
-    `;
-    popup.innerHTML = `
-        <div style="font-size:3rem; margin-bottom:12px;">💐</div>
-        <h2 style="color:#FF6B8A; margin-bottom:8px;">${message}</h2>
-        <p style="color:#666; margin-bottom:16px;">Keep blooming, my love! 🌸</p>
-        <button onclick="this.parentElement.remove()" style="
-            padding:10px 30px;
-            background:#FF6B8A;
-            color:white;
-            border:none;
-            border-radius:30px;
-            font-weight:600;
-            cursor:pointer;
-        ">Continue 💕</button>
-    `;
-    document.body.appendChild(popup);
-    setTimeout(() => { if (popup.parentElement) popup.remove(); }, 4000);
 }
 
 function renderGarden() {
@@ -1133,13 +670,12 @@ function renderGarden() {
     document.getElementById('garden-count').textContent = state.garden.totalBloomed;
     document.getElementById('garden-score').textContent = state.scores.total;
     
-    // Update love note
     const notes = [
-        "Every puzzle you solve brings us closer. You're my greatest adventure, Tshidi. Forever and always. ❤️",
-        "With every flower that blooms, my love for you grows stronger. You make my world beautiful. 🌸",
-        "You're the sunshine in my garden, the love in my heart. Each puzzle is a petal of our love story. 💕",
-        "Tshidi, you're not just my love - you're my home. This garden is just a tiny reflection of how much you mean to me. 🌺",
-        "Forever isn't long enough with you. Every moment, every puzzle, every flower - all for you, my love. 💖"
+        "Every puzzle you solve brings us closer. You're my greatest adventure, Tshidi. ❤️",
+        "With every flower that blooms, my love for you grows stronger. 🌸",
+        "You're the sunshine in my garden, the love in my heart. 💕",
+        "Tshidi, you're not just my love - you're my home. 🌺",
+        "Forever isn't long enough with you. All for you, my love. 💖"
     ];
     const idx = Math.min(Math.floor(state.garden.totalBloomed / 5), notes.length - 1);
     document.getElementById('love-note').textContent = notes[idx];
@@ -1164,8 +700,7 @@ function showDailyPuzzle() {
     if (!preview) return;
     
     const today = new Date().getDate();
-    const wordIndex = today % WORDS.length;
-    const word = WORDS[wordIndex];
+    const word = WORDS[today % WORDS.length];
     preview.innerHTML = `
         <div style="font-size:1.8rem; letter-spacing:4px; color:#FF6B8A; font-weight:bold;">
             ${shuffleWord(word.word)}
@@ -1179,7 +714,7 @@ function showDailyPuzzle() {
 // =============================================
 // EASTER EGG
 // =============================================
-function checkForEasterEgg() {
+function checkEasterEgg() {
     let clicks = 0;
     const logo = document.querySelector('header h1');
     if (logo) {
@@ -1198,33 +733,30 @@ function closeEasterEgg() {
 }
 
 // =============================================
-// INITIALIZATION
+// INIT
 // =============================================
 function init() {
     loadState();
     updateUI();
     renderGarden();
     showDailyPuzzle();
-    checkForEasterEgg();
+    checkEasterEgg();
     
-    // Hide loading screen
     setTimeout(() => {
         document.getElementById('loading').classList.add('hidden');
     }, 1200);
     
-    // Navigation
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             navigateTo(btn.dataset.page);
         });
     });
     
-    // Initialize word mode (home shows preview)
     initWordMode();
 }
 
 // =============================================
-// MAKE GLOBAL (for onclick attributes)
+// GLOBALS
 // =============================================
 window.navigateTo = navigateTo;
 window.checkWord = checkWord;
@@ -1236,409 +768,8 @@ window.newLogic = newLogic;
 window.checkLogic = checkLogic;
 window.closeEasterEgg = closeEasterEgg;
 
-// Start!
+// START
 document.addEventListener('DOMContentLoaded', init);
-</script>
-
-</body>
-</html>        .nav button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .nav button.active {
-            background: #FF6B8A;
-            color: white;
-        }
-        .page {
-            display: none;
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .page.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .word-display {
-            text-align: center;
-            padding: 30px;
-            font-size: 2rem;
-            letter-spacing: 4px;
-            font-weight: bold;
-            color: #FF6B8A;
-        }
-        .input-area {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .input-area input {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid #e0d6d9;
-            border-radius: 12px;
-            font-size: 1rem;
-        }
-        .input-area button {
-            padding: 15px 30px;
-            background: #FF6B8A;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .feedback {
-            text-align: center;
-            min-height: 40px;
-            font-weight: 500;
-        }
-        .btn {
-            padding: 12px 24px;
-            background: #2C3E50;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 10px 0;
-            width: 100%;
-        }
-        .garden-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            padding: 20px 0;
-        }
-        .flower {
-            font-size: 2.5rem;
-            text-align: center;
-            animation: bloom 0.6s ease;
-        }
-        @keyframes bloom {
-            from { transform: scale(0) rotate(-180deg); }
-            to { transform: scale(1) rotate(0deg); }
-        }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 15px;
-            background: #f8f0f3;
-            border-radius: 12px;
-            margin: 15px 0;
-        }
-        .hidden {
-            display: none !important;
-        }
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #FFF5F7;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            font-size: 1.5rem;
-        }
-        .heart {
-            font-size: 4rem;
-            animation: beat 1s infinite;
-        }
-        @keyframes beat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-        }
-    </style>
-</head>
-<body>
-
-<!-- Loading Screen -->
-<div id="loading">
-    <div class="heart">💗</div>
-    <p>Growing love for Tshidi...</p>
-</div>
-
-<!-- App -->
-<div id="app" class="hidden">
-    <div class="header">
-        <h1>🌸 Tshidi's Garden</h1>
-        <div style="font-size: 0.9rem; margin-top: 8px;">
-            ❤️ <span id="streak">0</span> | ⭐ <span id="score">0</span>
-        </div>
-    </div>
-
-    <div class="nav">
-        <button class="active" onclick="showPage('home')">🏠</button>
-        <button onclick="showPage('word')">📝</button>
-        <button onclick="showPage('garden')">🌺</button>
-    </div>
-
-    <!-- Home -->
-    <div id="home" class="page active">
-        <h2 style="color: #FF6B8A;">For My Tshidi 💕</h2>
-        <p style="margin: 15px 0; opacity: 0.7;">Every puzzle solved blooms a flower</p>
-        <button class="btn" onclick="showPage('word')">Start Playing 🌸</button>
-        <div class="garden-grid" id="mini-garden"></div>
-    </div>
-
-    <!-- Word Game -->
-    <div id="word" class="page">
-        <h2 style="color: #FF6B8A;">📝 Word Blossom</h2>
-        <div class="word-display" id="scrambled">???</div>
-        <div style="text-align:center; opacity:0.7;" id="hint">💡 Hint: ...</div>
-        <div class="input-area">
-            <input type="text" id="answer" placeholder="Type answer...">
-            <button onclick="checkAnswer()">Submit</button>
-        </div>
-        <div class="feedback" id="feedback"></div>
-        <div class="stats">
-            <span>Score: <span id="word-score">0</span></span>
-            <span>Found: <span id="found">0</span></span>
-        </div>
-        <button class="btn" onclick="newWord()">🔄 New Word</button>
-    </div>
-
-    <!-- Garden -->
-    <div id="garden" class="page">
-        <h2 style="color: #FF6B8A;">🌺 Love Garden</h2>
-        <p style="margin: 10px 0; opacity:0.7;"><span id="flower-count">0</span> flowers blooming</p>
-        <div class="garden-grid" id="full-garden"></div>
-        <div class="love-letter" style="background: #fff5f7; padding: 15px; border-radius: 12px; border-left: 4px solid #FF6B8A; margin-top: 15px;">
-            <h3>💌 Love Note</h3>
-            <p id="love-note">Every puzzle you solve brings us closer. You're my greatest adventure, Tshidi. ❤️</p>
-        </div>
-    </div>
-</div>
-
-<script>
-// ====== SIMPLE GAME ENGINE ======
-
-// WORDS
-const WORDS = [
-    { word: 'LOVE', hint: 'What I feel for you' },
-    { word: 'HEART', hint: 'It beats for you' },
-    { word: 'SMILE', hint: "You make me ___" },
-    { word: 'KISS', hint: 'Sweet gesture' },
-    { word: 'HUG', hint: 'Warm embrace' },
-    { word: 'FOREVER', hint: 'Always and ___' },
-    { word: 'SWEET', hint: "You're so ___" },
-    { word: 'ANGEL', hint: 'Heavenly being' },
-    { word: 'DREAM', hint: "You're my ___" },
-    { word: 'TSHIDI', hint: 'The most beautiful name 💕' }
-];
-
-const FLOWERS = ['🌸', '🌺', '🌻', '🌹', '🌷', '🌼', '💐', '🌿', '🍀'];
-
-// STATE
-let state = {
-    score: 0,
-    streak: 0,
-    flowers: [],
-    wordScore: 0,
-    found: 0,
-    currentWord: null,
-    usedWords: []
-};
-
-// Load saved state
-function loadState() {
-    try {
-        const saved = localStorage.getItem('tshidiSimple');
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            state = { ...state, ...parsed };
-        }
-    } catch(e) {}
-}
-
-// Save state
-function saveState() {
-    try {
-        localStorage.setItem('tshidiSimple', JSON.stringify(state));
-    } catch(e) {}
-}
-
-// Show page
-function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(page).classList.add('active');
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-    
-    // Find matching button
-    const buttons = document.querySelectorAll('.nav button');
-    const pages = ['home', 'word', 'garden'];
-    buttons.forEach((b, i) => {
-        if (pages[i] === page) b.classList.add('active');
-    });
-    
-    if (page === 'word') initWord();
-    if (page === 'garden') renderGarden();
-}
-
-// Shuffle word
-function shuffleWord(word) {
-    const arr = word.split('');
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr.join('');
-}
-
-// Word Game
-function initWord() {
-    if (state.usedWords.length >= WORDS.length) {
-        state.usedWords = [];
-    }
-    
-    const available = WORDS.filter((_, i) => !state.usedWords.includes(i));
-    if (available.length === 0) {
-        state.usedWords = [];
-        initWord();
-        return;
-    }
-    
-    const randomIndex = Math.floor(Math.random() * available.length);
-    const wordObj = available[randomIndex];
-    const originalIndex = WORDS.indexOf(wordObj);
-    state.usedWords.push(originalIndex);
-    state.currentWord = wordObj;
-    
-    document.getElementById('scrambled').textContent = shuffleWord(wordObj.word);
-    document.getElementById('hint').textContent = '💡 ' + wordObj.hint;
-    document.getElementById('answer').value = '';
-    document.getElementById('feedback').textContent = '';
-    document.getElementById('answer').focus();
-}
-
-function checkAnswer() {
-    const input = document.getElementById('answer');
-    const feedback = document.getElementById('feedback');
-    const answer = input.value.toUpperCase().trim();
-    
-    if (!answer) {
-        feedback.textContent = 'Please type an answer!';
-        feedback.style.color = '#dc3545';
-        return;
-    }
-    
-    if (answer === state.currentWord.word) {
-        const points = state.currentWord.word.length * 10;
-        state.wordScore += points;
-        state.score += points;
-        state.found++;
-        state.streak++;
-        
-        feedback.textContent = `🌸 Perfect! +${points} points!`;
-        feedback.style.color = '#28a745';
-        
-        // Add flower
-        const flower = FLOWERS[Math.floor(Math.random() * FLOWERS.length)];
-        state.flowers.push(flower);
-        
-        // Update displays
-        document.getElementById('word-score').textContent = state.wordScore;
-        document.getElementById('found').textContent = state.found;
-        document.getElementById('score').textContent = state.score;
-        document.getElementById('streak').textContent = state.streak;
-        document.getElementById('flower-count').textContent = state.flowers.length;
-        
-        saveState();
-        renderGarden();
-        
-        setTimeout(() => initWord(), 1500);
-    } else {
-        feedback.textContent = '❌ Try again, Tshidi!';
-        feedback.style.color = '#dc3545';
-        state.streak = 0;
-        document.getElementById('streak').textContent = state.streak;
-        saveState();
-    }
-}
-
-function newWord() {
-    initWord();
-}
-
-// Garden
-function renderGarden() {
-    const fullGarden = document.getElementById('full-garden');
-    const miniGarden = document.getElementById('mini-garden');
-    
-    [fullGarden, miniGarden].forEach(garden => {
-        if (!garden) return;
-        garden.innerHTML = '';
-        
-        if (state.flowers.length === 0) {
-            garden.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; color:#999;">🌱 Solve puzzles to grow your garden!</div>';
-            return;
-        }
-        
-        state.flowers.forEach(flower => {
-            const div = document.createElement('div');
-            div.className = 'flower';
-            div.textContent = flower;
-            garden.appendChild(div);
-        });
-        
-        // Add empty slots
-        const maxSlots = garden.id === 'full-garden' ? 24 : 8;
-        for (let i = state.flowers.length; i < maxSlots; i++) {
-            const div = document.createElement('div');
-            div.className = 'flower';
-            div.textContent = '🌱';
-            div.style.opacity = '0.2';
-            garden.appendChild(div);
-        }
-    });
-    
-    document.getElementById('flower-count').textContent = state.flowers.length;
-    
-    // Update love note
-    const notes = [
-        "Every puzzle you solve brings us closer. You're my greatest adventure, Tshidi. ❤️",
-        "With every flower that blooms, my love for you grows stronger. 🌸",
-        "You're the sunshine in my garden, the love in my heart. 💕",
-        "Tshidi, you're not just my love - you're my home. 🌺",
-        "Forever isn't long enough with you. All for you, my love. 💖"
-    ];
-    const index = Math.min(Math.floor(state.flowers.length / 3), notes.length - 1);
-    document.getElementById('love-note').textContent = notes[index];
-}
-
-// Initialize
-loadState();
-renderGarden();
-document.getElementById('score').textContent = state.score;
-document.getElementById('streak').textContent = state.streak;
-document.getElementById('flower-count').textContent = state.flowers.length;
-
-// Hide loading
-setTimeout(() => {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('app').classList.remove('hidden');
-}, 1000);
-
-// Make functions global
-window.showPage = showPage;
-window.checkAnswer = checkAnswer;
-window.newWord = newWord;
-window.initWord = initWord;
-window.renderGarden = renderGarden;
 </script>
 </body>
 </html>
