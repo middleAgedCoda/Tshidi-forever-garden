@@ -2,108 +2,87 @@
 // TSHIDI'S FOREVER GARDEN - SERVICE WORKER
 // =============================================
 
-const CACHE_NAME = 'tshidi-garden-v3';
+const CACHE_NAME = 'tshidi-garden-v4';
 const OFFLINE_URL = '/index.html';
 
-// Files to cache - only index.html since everything is in one file!
 const FILES_TO_CACHE = [
     '/',
     '/index.html',
     '/sw.js',
-    // Google Fonts (for offline use)
     'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap'
 ];
 
-// =============================================
-// INSTALL EVENT
-// =============================================
 self.addEventListener('install', (event) => {
-    console.log('📦 Service Worker installing...');
-    
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('📁 Caching files...');
-                return cache.addAll(FILES_TO_CACHE);
-            })
-            .then(() => {
-                console.log('✅ All files cached!');
-                return self.skipWaiting();
-            })
-            .catch((error) => {
-                console.error('❌ Cache installation failed:', error);
-            })
+            .then((cache) => cache.addAll(FILES_TO_CACHE))
+            .then(() => self.skipWaiting())
     );
 });
 
-// =============================================
-// ACTIVATE EVENT
-// =============================================
 self.addEventListener('activate', (event) => {
-    console.log('🚀 Service Worker activating...');
-    
-    const cacheWhitelist = [CACHE_NAME];
-    
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        console.log('🗑️ Deleting old cache:', cacheName);
+                    if (cacheName !== CACHE_NAME) {
                         return caches.delete(cacheName);
                     }
                 })
             );
-        })
-        .then(() => {
-            console.log('✅ Service Worker activated!');
-            return self.clients.claim();
-        })
+        }).then(() => self.clients.claim())
     );
 });
 
-// =============================================
-// FETCH EVENT
-// =============================================
 self.addEventListener('fetch', (event) => {
     const request = event.request;
     const url = new URL(request.url);
     
-    // For Google Fonts, cache them
+    // For Google Fonts
     if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
         event.respondWith(
-            caches.match(request)
-                .then((response) => {
-                    return response || fetch(request);
-                })
+            caches.match(request).then(response => response || fetch(request))
         );
         return;
     }
     
-    // For HTML requests - network first, fallback to cache
+    // For HTML - network first, fallback to cache
     if (request.mode === 'navigate') {
         event.respondWith(
             fetch(request)
-                .then((response) => {
-                    const responseClone = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(request, responseClone);
-                    });
+                .then(response => {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
                     return response;
                 })
-                .catch(() => {
-                    return caches.match(OFFLINE_URL)
-                        .then((cachedResponse) => {
-                            if (cachedResponse) {
-                                return cachedResponse;
-                            }
-                            return new Response('Offline - Please connect to the internet.', {
-                                status: 503,
-                                statusText: 'Service Unavailable'
-                            });
-                        });
-                })
+                .catch(() => caches.match(OFFLINE_URL))
         );
+        return;
+    }
+    
+    // For everything else - cache first
+    event.respondWith(
+        caches.match(request)
+            .then(response => response || fetch(request))
+    );
+});
+
+// Offline/Online notifications
+self.addEventListener('online', () => {
+    self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+            client.postMessage({ type: 'ONLINE', message: '🌐 Back Online!' });
+        });
+    });
+});
+
+self.addEventListener('offline', () => {
+    self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+            client.postMessage({ type: 'OFFLINE', message: '📴 Offline - Game still works! 🎮' });
+        });
+    });
+});        );
         return;
     }
     
