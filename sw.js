@@ -2,14 +2,15 @@
 // TSHIDI'S FOREVER GARDEN - SERVICE WORKER
 // =============================================
 
-const CACHE_NAME = 'tshidi-garden-v7';
+const CACHE_NAME = 'tshidi-garden-v8';
 const OFFLINE_URL = '/index.html';
 
 const CORE_FILES = [
     '/',
     '/index.html',
     '/sw.js',
-    '/music/playlist.json'
+    '/music/playlist.json',
+    '/images/photos.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -41,6 +42,22 @@ self.addEventListener('install', (event) => {
                 }));
             } catch (err) {
                 console.warn('⚠️ Could not read playlist.json to precache songs', err);
+            }
+
+            // Same pattern for the photo puzzle images: precache whatever is
+            // listed in images/photos.json, skipping anything missing rather
+            // than failing the whole install. An empty/missing manifest is
+            // fine — the puzzle falls back to generated placeholder art.
+            try {
+                const photosRes = await fetch('/images/photos.json');
+                const photos = await photosRes.json();
+                await Promise.all(photos.map(async (photo) => {
+                    const url = encodeURI(`/images/${photo.file}`);
+                    try { await cache.add(url); console.log('🧩 Cached', photo.file); }
+                    catch (err) { console.warn('⚠️ Could not cache photo', photo.file, err); }
+                }));
+            } catch (err) {
+                console.warn('⚠️ Could not read photos.json to precache images', err);
             }
 
             return self.skipWaiting();
@@ -77,6 +94,23 @@ self.addEventListener('fetch', (event) => {
 
     // MP3s: cache-first, then cache whatever is fetched successfully.
     if (url.pathname.includes('/music/') && url.pathname.endsWith('.mp3')) {
+        event.respondWith(
+            caches.match(request).then((response) => {
+                if (response) return response;
+                return fetch(request).then((response) => {
+                    if (response && response.status === 200) {
+                        const responseClone = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+                    }
+                    return response;
+                }).catch(() => new Response('', { status: 404 }));
+            })
+        );
+        return;
+    }
+
+    // Photos: same cache-first pattern as MP3s above.
+    if (url.pathname.includes('/images/') && /\.(jpe?g|png|webp)$/i.test(url.pathname)) {
         event.respondWith(
             caches.match(request).then((response) => {
                 if (response) return response;
