@@ -195,6 +195,18 @@
         .quiz-options button { padding: 14px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: var(--text-primary); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.25s ease; text-align: left; }
         .quiz-options button:active { transform: scale(0.97); }
         .quiz-options button.picked { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-color: var(--primary); color: white; }
+        .button-row { display: flex; gap: 10px; margin-top: 12px; }
+        .button-row button { margin-top: 0; flex: 1; }
+        .hint-reveal { text-align: center; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 3px; color: var(--accent); min-height: 22px; margin-top: 6px; }
+        #puzzle-board-wrap { position: relative; margin: 16px auto 0; touch-action: none; }
+        #puzzle-board { position: relative; margin: 0 auto; border-radius: 14px; background-size: cover; background-position: center; opacity: 1; border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2); }
+        #puzzle-board::before { content: ''; position: absolute; inset: 0; background: rgba(10,10,15,0.55); border-radius: 14px; }
+        .puzzle-grid-lines { position: absolute; inset: 0; pointer-events: none; }
+        .puzzle-piece { position: absolute; cursor: grab; touch-action: none; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5)); transition: filter 0.2s ease; }
+        .puzzle-piece.placed { cursor: default; filter: drop-shadow(0 0 8px rgba(76,175,80,0.6)); }
+        .puzzle-piece canvas { display: block; pointer-events: none; }
+        #puzzle-tray-label { text-align: center; font-size: 0.7rem; color: var(--text-secondary); margin-top: 8px; letter-spacing: 1px; opacity: 0.6; }
+        #puzzle-loading { text-align: center; padding: 40px 0; color: var(--text-secondary); }
         @media (max-width: 400px) {
             .sudoku-cell { font-size: 1rem; }
             .scrambled-word { font-size: 1.6rem; letter-spacing: 3px; }
@@ -260,6 +272,7 @@
         <button class="nav-btn" data-page="numbers">🔢 Numbers</button>
         <button class="nav-btn" data-page="logic">🧠 Logic</button>
         <button class="nav-btn" data-page="memory">🃏 Memory</button>
+        <button class="nav-btn" data-page="puzzle">🧩 Photos</button>
         <button class="nav-btn" data-page="quiz">💭 Us Quiz</button>
         <button class="nav-btn" data-page="adult">🔞 Adult</button>
         <button class="nav-btn" data-page="garden">🌺 Garden</button>
@@ -294,6 +307,7 @@
             <div class="word-display">
                 <div id="word-scrambled" class="scrambled-word">????</div>
                 <div id="word-hint" class="hint">💡 Hint: ...</div>
+                <div id="word-reveal" class="hint-reveal"></div>
             </div>
             <div class="word-input-area">
                 <input type="text" id="word-input" placeholder="Type your answer..." maxlength="20" autocomplete="off">
@@ -301,7 +315,10 @@
             </div>
             <div id="word-feedback" class="word-feedback"></div>
             <div class="word-stats"><span>Score: <strong id="word-score">0</strong></span><span>Found: <strong id="word-found">0</strong></span></div>
-            <button class="btn-secondary" onclick="getNewWord()">🔄 New Word</button>
+            <div class="button-row">
+                <button class="btn-secondary" onclick="getNewWord()">🔄 New Word</button>
+                <button class="btn-secondary" onclick="hintWord()">💡 Reveal Letter</button>
+            </div>
         </div>
     </section>
 
@@ -320,7 +337,10 @@
                 <button onclick="clearCell()">✖️</button>
             </div>
             <div id="sudoku-feedback" class="word-feedback"></div>
-            <button class="btn-secondary" onclick="newSudoku()">🔄 New Puzzle</button>
+            <div class="button-row">
+                <button class="btn-secondary" onclick="newSudoku()">🔄 New Puzzle</button>
+                <button class="btn-secondary" onclick="hintSudoku()">💡 Fill One In</button>
+            </div>
         </div>
     </section>
 
@@ -332,13 +352,17 @@
             </div>
             <div class="game-instructions"><strong>🧩 How to Play:</strong> Read the riddle carefully, then type your answer. <span style="color:var(--primary);">💡 Think outside the box - the answer is usually simpler than you think!</span></div>
             <div id="logic-puzzle" class="logic-puzzle">Loading puzzle...</div>
+            <div id="logic-reveal" class="hint-reveal"></div>
             <div class="logic-input">
                 <input type="text" id="logic-answer" placeholder="Your answer..." autocomplete="off">
                 <button onclick="checkLogic()">🌺 Submit</button>
             </div>
             <div id="logic-feedback" class="word-feedback"></div>
             <div class="logic-stats"><span>Score: <strong id="logic-score">0</strong></span></div>
-            <button class="btn-secondary" onclick="newLogic()">🔄 New Puzzle</button>
+            <div class="button-row">
+                <button class="btn-secondary" onclick="newLogic()">🔄 New Puzzle</button>
+                <button class="btn-secondary" onclick="hintLogic()">💡 Reveal Letter</button>
+            </div>
         </div>
     </section>
 
@@ -352,7 +376,30 @@
             <div id="memory-grid" class="memory-grid"></div>
             <div class="word-stats"><span>Moves: <strong id="memory-moves">0</strong></span><span>Pairs: <strong id="memory-pairs">0</strong>/8</span></div>
             <div id="memory-feedback" class="word-feedback"></div>
-            <button class="btn-secondary" onclick="newMemoryGame()">🔄 New Board</button>
+            <div class="button-row">
+                <button class="btn-secondary" onclick="newMemoryGame()">🔄 New Board</button>
+                <button class="btn-secondary" onclick="hintMemory()">💡 Quick Peek</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="puzzle" class="page">
+        <div class="card">
+            <div class="game-header">
+                <h2>🧩 Photo Puzzle</h2>
+                <span class="level-badge">Level <span id="puzzle-level">1</span></span>
+            </div>
+            <div class="game-instructions"><strong>🎯 How to Play:</strong> Drag each piece into its spot on the board. The faint image underneath is your guide. <span id="puzzle-photo-label" style="color:var(--primary);"></span></div>
+            <div id="puzzle-board-wrap">
+                <div id="puzzle-loading">🧩 Shuffling pieces...</div>
+            </div>
+            <div id="puzzle-tray-label">✨ drag pieces from below onto the board ✨</div>
+            <div class="word-stats"><span>Placed: <strong id="puzzle-placed">0</strong>/<span id="puzzle-total">9</span></span></div>
+            <div id="puzzle-feedback" class="word-feedback"></div>
+            <div class="button-row">
+                <button class="btn-secondary" onclick="newPuzzleGame()">🔄 New Photo</button>
+                <button class="btn-secondary" onclick="hintPuzzle()">💡 Place One</button>
+            </div>
         </div>
     </section>
 
@@ -378,13 +425,17 @@
             </div>
             <div class="game-instructions" style="border-color: rgba(255,0,0,0.2);"><strong>🔥 Warning:</strong> This mode is for adults only. Questions get... spicy. <span style="color:#FF1493;">💋 Don't say we didn't warn you!</span></div>
             <div id="adult-puzzle" class="logic-puzzle" style="border-color: rgba(255,0,0,0.1);">Loading spicy content...</div>
+            <div id="adult-reveal" class="hint-reveal"></div>
             <div class="logic-input">
                 <input type="text" id="adult-answer" placeholder="Your answer..." autocomplete="off">
                 <button onclick="checkAdult()" style="background:linear-gradient(135deg,#FF0000,#8B0000);">🔥 Submit</button>
             </div>
             <div id="adult-feedback" class="word-feedback"></div>
             <div class="logic-stats"><span>Score: <strong id="adult-score">0</strong></span></div>
-            <button class="btn-adult" onclick="newAdult()">🔄 New Challenge</button>
+            <div class="button-row">
+                <button class="btn-adult" onclick="newAdult()">🔄 New Challenge</button>
+                <button class="btn-secondary" onclick="hintAdult()">💡 Reveal Letter</button>
+            </div>
         </div>
     </section>
 
@@ -669,9 +720,9 @@ const InfiniteEngine = {
 // ---- 9. STATE ----
 // FIX: added memory + quiz sub-states up front so future saves stay compatible.
 const DEFAULT_STATE = {
-    scores: { word: 0, number: 0, logic: 0, adult: 0, total: 0 },
-    levels: { word: 1, number: 1, logic: 1, adult: 1 },
-    progress: { word: 0, number: 0, logic: 0, adult: 0 },
+    scores: { word: 0, number: 0, logic: 0, adult: 0, puzzle: 0, total: 0 },
+    levels: { word: 1, number: 1, logic: 1, adult: 1, puzzle: 1 },
+    progress: { word: 0, number: 0, logic: 0, adult: 0, puzzle: 0 },
     garden: { flowers: [], totalBloomed: 0 },
     streak: 0,
     word: { current: null, found: 0 },
@@ -727,6 +778,7 @@ function navigateTo(page) {
     if (page === 'numbers') initSudoku();
     if (page === 'logic') initLogicMode();
     if (page === 'memory') initMemoryMode();
+    if (page === 'puzzle') initPuzzleMode();
     if (page === 'quiz') initQuizMode();
     if (page === 'adult') initAdultMode();
     if (page === 'garden') renderGarden();
@@ -762,6 +814,18 @@ function updateProgressUI(mode) {
     }
 }
 
+// ---- 12b. HINT HELPERS (shared) ----
+function revealMask(word, revealedCount) {
+    return word.split('').map((ch, i) => (i < revealedCount ? ch : '_')).join(' ');
+}
+
+function hintWord() {
+    if (!state.word.current) return;
+    const word = state.word.current.word;
+    state.word.hintsUsed = Math.min((state.word.hintsUsed || 0) + 1, word.length - 1);
+    document.getElementById('word-reveal').textContent = '💡 ' + revealMask(word, state.word.hintsUsed);
+}
+
 // ---- 12. WORD MODE ----
 function initWordMode() {
     document.getElementById('word-level').textContent = state.levels.word;
@@ -774,8 +838,10 @@ function initWordMode() {
 function getNewWord() {
     const wordData = InfiniteEngine.getWord();
     state.word.current = wordData;
+    state.word.hintsUsed = 0;
     document.getElementById('word-scrambled').textContent = shuffleWord(wordData.word);
     document.getElementById('word-hint').textContent = '💡 ' + wordData.hint;
+    document.getElementById('word-reveal').textContent = '';
     document.getElementById('word-input').value = '';
     document.getElementById('word-input').focus();
     document.getElementById('word-feedback').textContent = '';
@@ -853,13 +919,8 @@ function fillNumber(num) {
         feedback.textContent = InfiniteEngine.getFeedback('correct');
         feedback.className = 'word-feedback success';
         state.sudoku.selected = null;
-        if (isSudokuComplete()) {
-            const points = 100 + state.levels.number * 20;
-            state.scores.number += points; state.scores.total += points;
-            feedback.textContent = `🎉 Mwari! You solved it! +${points} points!`;
-            feedback.className = 'word-feedback success';
-            addFlower(); checkLevelUp('number'); updateUI(); saveState();
-            setTimeout(() => newSudoku(), 3000);
+        if (!completeSudokuIfDone(feedback)) {
+            // feedback already shows the per-fill success message
         }
     } else {
         state.sudoku.errors++;
@@ -888,6 +949,36 @@ function isSudokuComplete() {
     return true;
 }
 
+// Shared by both a normal correct fill and the hint button, so completion
+// scoring/celebration logic only lives in one place.
+function completeSudokuIfDone(feedback) {
+    if (!isSudokuComplete()) return false;
+    const points = 100 + state.levels.number * 20;
+    state.scores.number += points; state.scores.total += points;
+    feedback.textContent = `🎉 Mwari! You solved it! +${points} points!`;
+    feedback.className = 'word-feedback success';
+    addFlower(); checkLevelUp('number'); updateUI(); saveState();
+    setTimeout(() => newSudoku(), 3000);
+    return true;
+}
+
+function hintSudoku() {
+    const feedback = document.getElementById('sudoku-feedback');
+    if (!state.sudoku.selected) {
+        outer: for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) {
+            if (state.sudoku.board[r][c] === 0) { state.sudoku.selected = { row: r, col: c }; break outer; }
+        }
+    }
+    if (!state.sudoku.selected) { feedback.textContent = '🎉 Board is already full!'; feedback.className = 'word-feedback success'; return; }
+    const { row, col } = state.sudoku.selected;
+    state.sudoku.board[row][col] = state.sudoku.solution[row][col];
+    state.sudoku.selected = null;
+    renderSudoku();
+    feedback.textContent = '💡 Filled one in for you!';
+    feedback.className = 'word-feedback success';
+    completeSudokuIfDone(feedback);
+}
+
 // ---- 14. LOGIC MODE ----
 function initLogicMode() {
     document.getElementById('logic-level').textContent = state.levels.logic;
@@ -896,10 +987,19 @@ function initLogicMode() {
     newLogic();
 }
 
+function hintLogic() {
+    if (!state.logic.current) return;
+    const answer = state.logic.current.answer;
+    state.logic.hintsUsed = Math.min((state.logic.hintsUsed || 0) + 1, answer.length - 1);
+    document.getElementById('logic-reveal').textContent = `💡 ${revealMask(answer, state.logic.hintsUsed)} (${answer.length} letters)`;
+}
+
 function newLogic() {
     const puzzle = InfiniteEngine.getLogic();
     state.logic.current = puzzle;
+    state.logic.hintsUsed = 0;
     document.getElementById('logic-puzzle').innerHTML = `<div><div style="font-size:1.4rem; margin-bottom:12px;">🤔 Think carefully...</div><div style="font-size:1.1rem;">${puzzle.question}</div></div>`;
+    document.getElementById('logic-reveal').textContent = '';
     document.getElementById('logic-answer').value = '';
     document.getElementById('logic-answer').focus();
     document.getElementById('logic-feedback').textContent = '';
@@ -939,6 +1039,7 @@ function newMemoryGame() {
     state.memory.moves = 0;
     state.memory.pairsFound = 0;
     state.memory.lock = false;
+    state.memory.hintsUsed = 0;
     renderMemory();
     document.getElementById('memory-feedback').textContent = '';
     document.getElementById('memory-feedback').className = 'word-feedback';
@@ -958,6 +1059,27 @@ function renderMemory() {
     });
     document.getElementById('memory-moves').textContent = state.memory.moves;
     document.getElementById('memory-pairs').textContent = state.memory.pairsFound;
+}
+
+function hintMemory() {
+    const feedback = document.getElementById('memory-feedback');
+    if ((state.memory.hintsUsed || 0) >= 1) {
+        feedback.textContent = '💡 Already used your peek on this board!';
+        feedback.className = 'word-feedback error';
+        return;
+    }
+    state.memory.hintsUsed = 1;
+    state.memory.lock = true;
+    const alreadyFlipped = state.memory.cards.filter(c => !c.matched && c.flipped).map(c => c.id);
+    state.memory.cards.forEach(c => { if (!c.matched) c.flipped = true; });
+    renderMemory();
+    feedback.textContent = '💡 Quick peek! Memorize fast...';
+    feedback.className = 'word-feedback success';
+    setTimeout(() => {
+        state.memory.cards.forEach(c => { if (!c.matched && !alreadyFlipped.includes(c.id)) c.flipped = false; });
+        state.memory.lock = false;
+        renderMemory();
+    }, 1500);
 }
 
 function flipMemoryCard(id) {
@@ -1014,6 +1136,307 @@ function flipMemoryCard(id) {
             renderMemory();
         }, 900);
     }
+}
+
+// ---- 15b. PHOTO PUZZLE (JIGSAW, new) ----
+// Photos come from images/photos.json (same manifest pattern as the music
+// playlist). If that file is missing, empty, or a listed photo fails to
+// load, it falls back to generated on-brand placeholder art drawn entirely
+// in canvas — so the game works today with zero real photos, and you can
+// mix in real ones any time by dropping files in /images and editing the
+// manifest. In-progress piece positions live in memory only (not saved to
+// localStorage) — level/score progress persists, but a hard refresh mid-
+// puzzle starts a fresh board.
+const PUZZLE_BOARD_SIZE = 300;
+const PUZZLE_TAB_SIZE = 0.22;
+let puzzleRuntime = null; // { pieces, rows, cols, pieceW, pieceH, pad, placedCount, total }
+
+function puzzleGridForLevel(level) {
+    if (level <= 1) return { rows: 3, cols: 3 };
+    if (level === 2) return { rows: 3, cols: 4 };
+    return { rows: 4, cols: 4 };
+}
+
+function generatePlaceholderArt(size, variant) {
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const palettes = [['#2a0a2e', '#ff1493', '#9400d3'], ['#0a0a1e', '#ffd700', '#ff1493'], ['#1a0a2e', '#9400d3', '#ff69b4']];
+    const colors = palettes[variant % palettes.length];
+    const grad = ctx.createLinearGradient(0, 0, size, size);
+    grad.addColorStop(0, colors[0]); grad.addColorStop(0.5, colors[1]); grad.addColorStop(1, colors[2]);
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, size, size);
+    const glyphs = ['💕', '🌙', '⭐', '🌸', '💫', '🌹'];
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (let i = 0; i < 14; i++) {
+        ctx.font = `${size * (0.08 + Math.random() * 0.08)}px sans-serif`;
+        ctx.globalAlpha = 0.2 + Math.random() * 0.3;
+        ctx.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], Math.random() * size, Math.random() * size);
+    }
+    ctx.globalAlpha = 1;
+    ctx.font = `900 ${size * 0.09}px Cinzel, serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillText('Forever Ours', size / 2, size / 2);
+    return canvas;
+}
+
+async function loadPuzzleImageManifest() {
+    try {
+        const res = await fetch('/images/photos.json');
+        if (!res.ok) throw new Error('no manifest');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) return data;
+        throw new Error('empty');
+    } catch (e) {
+        return [];
+    }
+}
+
+function loadImageEl(src) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+    });
+}
+
+async function getPuzzleSource(size) {
+    const manifest = await loadPuzzleImageManifest();
+    if (manifest.length > 0) {
+        const shuffled = [...manifest].sort(() => Math.random() - 0.5);
+        for (const entry of shuffled) {
+            try {
+                const img = await loadImageEl(encodeURI(`/images/${entry.file}`));
+                const canvas = document.createElement('canvas');
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const side = Math.min(img.naturalWidth, img.naturalHeight);
+                const sx = (img.naturalWidth - side) / 2, sy = (img.naturalHeight - side) / 2;
+                ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+                return { canvas, label: entry.name ? `📸 ${entry.name}` : '' };
+            } catch (e) {
+                console.warn('🧩 Could not load photo', entry.file, '- trying next');
+            }
+        }
+    }
+    return { canvas: generatePlaceholderArt(size, Math.floor(Math.random() * 3)), label: '💡 Add your own photos in images/photos.json!' };
+}
+
+// Builds the wobbly jigsaw-tab outline for one edge between two points.
+function jigsawEdgePoints(x1, y1, x2, y2, sign, tabSize) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = dy / len, ny = -dx / len; // outward normal for clockwise traversal
+    const t = tabSize * len * sign;
+    const fracs = [0, 0.35, 0.38, 0.42, 0.5, 0.58, 0.62, 0.65, 1];
+    const offs = [0, 0, 0.8, 1.0, 1.15, 1.0, 0.8, 0, 0];
+    return fracs.map((f, i) => ({ x: x1 + dx * f + nx * offs[i] * t, y: y1 + dy * f + ny * offs[i] * t }));
+}
+
+function tracePiecePath(ctx, w, h, top, right, bottom, left, tabSize, ox, oy) {
+    const pts = [];
+    pts.push(...jigsawEdgePoints(0, 0, w, 0, top, tabSize));
+    pts.push(...jigsawEdgePoints(w, 0, w, h, right, tabSize).slice(1));
+    pts.push(...jigsawEdgePoints(w, h, 0, h, bottom, tabSize).slice(1));
+    pts.push(...jigsawEdgePoints(0, h, 0, 0, left, tabSize).slice(1));
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x + ox, pts[0].y + oy);
+    for (let i = 1; i < pts.length - 1; i++) {
+        const mx = (pts[i].x + pts[i + 1].x) / 2 + ox, my = (pts[i].y + pts[i + 1].y) / 2 + oy;
+        ctx.quadraticCurveTo(pts[i].x + ox, pts[i].y + oy, mx, my);
+    }
+    ctx.lineTo(pts[pts.length - 1].x + ox, pts[pts.length - 1].y + oy);
+    ctx.closePath();
+}
+
+function renderPuzzlePiece(sourceCanvas, pieceW, pieceH, top, right, bottom, left, colOffsetPx, rowOffsetPx) {
+    const pad = Math.ceil(PUZZLE_TAB_SIZE * Math.max(pieceW, pieceH) * 1.3);
+    const cw = pieceW + pad * 2, ch = pieceH + pad * 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = cw; canvas.height = ch;
+    const ctx = canvas.getContext('2d');
+    tracePiecePath(ctx, pieceW, pieceH, top, right, bottom, left, PUZZLE_TAB_SIZE, pad, pad);
+    ctx.save();
+    ctx.clip();
+    ctx.drawImage(sourceCanvas, colOffsetPx - pad, rowOffsetPx - pad, cw, ch, 0, 0, cw, ch);
+    ctx.restore();
+    tracePiecePath(ctx, pieceW, pieceH, top, right, bottom, left, PUZZLE_TAB_SIZE, pad, pad);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.stroke();
+    return { canvas, pad };
+}
+
+function initPuzzleMode() {
+    document.getElementById('puzzle-level').textContent = state.levels.puzzle;
+    if (puzzleRuntime) { renderPuzzleFromRuntime(); return; }
+    newPuzzleGame();
+}
+
+async function newPuzzleGame() {
+    const wrap = document.getElementById('puzzle-board-wrap');
+    wrap.innerHTML = '<div id="puzzle-loading">🧩 Shuffling pieces...</div>';
+    document.getElementById('puzzle-feedback').textContent = '';
+    document.getElementById('puzzle-feedback').className = 'word-feedback';
+
+    const { rows, cols } = puzzleGridForLevel(state.levels.puzzle);
+    const { canvas: sourceCanvas, label } = await getPuzzleSource(PUZZLE_BOARD_SIZE);
+    document.getElementById('puzzle-photo-label').textContent = label;
+    document.getElementById('puzzle-total').textContent = rows * cols;
+    document.getElementById('puzzle-placed').textContent = '0';
+
+    const pieceW = PUZZLE_BOARD_SIZE / cols, pieceH = PUZZLE_BOARD_SIZE / rows;
+
+    // Shared edge sign matrices so neighboring pieces' tabs/notches match.
+    const horizontalTabs = Array.from({ length: rows - 1 }, () => Array.from({ length: cols }, () => (Math.random() > 0.5 ? 1 : -1)));
+    const verticalTabs = Array.from({ length: rows }, () => Array.from({ length: cols - 1 }, () => (Math.random() > 0.5 ? 1 : -1)));
+
+    const pieces = [];
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const top = r === 0 ? 0 : -horizontalTabs[r - 1][c];
+            const bottom = r === rows - 1 ? 0 : horizontalTabs[r][c];
+            const left = c === 0 ? 0 : -verticalTabs[r][c - 1];
+            const right = c === cols - 1 ? 0 : verticalTabs[r][c];
+            const { canvas, pad } = renderPuzzlePiece(sourceCanvas, pieceW, pieceH, top, right, bottom, left, c * pieceW, r * pieceH);
+            pieces.push({
+                r, c, canvas, pad,
+                targetLeft: c * pieceW - pad, targetTop: r * pieceH - pad,
+                placed: false
+            });
+        }
+    }
+
+    puzzleRuntime = { rows, cols, pieceW, pieceH, pieces, sourceCanvas, placedCount: 0, total: rows * cols };
+    renderPuzzleFromRuntime();
+}
+
+function renderPuzzleFromRuntime() {
+    const rt = puzzleRuntime;
+    const wrap = document.getElementById('puzzle-board-wrap');
+    wrap.innerHTML = '';
+
+    const board = document.createElement('div');
+    board.id = 'puzzle-board';
+    board.style.width = PUZZLE_BOARD_SIZE + 'px';
+    board.style.height = PUZZLE_BOARD_SIZE + 'px';
+    board.style.backgroundImage = `url(${rt.sourceCanvas.toDataURL()})`;
+
+    const gridLines = document.createElement('div');
+    gridLines.className = 'puzzle-grid-lines';
+    gridLines.style.backgroundImage =
+        `repeating-linear-gradient(to right, rgba(255,255,255,0.18) 0 1px, transparent 1px ${rt.pieceW}px),` +
+        `repeating-linear-gradient(to bottom, rgba(255,255,255,0.18) 0 1px, transparent 1px ${rt.pieceH}px)`;
+    board.appendChild(gridLines);
+    wrap.appendChild(board);
+
+    const trayHeight = 160;
+    wrap.style.height = (PUZZLE_BOARD_SIZE + trayHeight + 20) + 'px';
+    board.style.position = 'absolute';
+    board.style.top = '0';
+    board.style.left = '50%';
+    board.style.transform = 'translateX(-50%)';
+
+    const boardLeftPx = (wrap.clientWidth - PUZZLE_BOARD_SIZE) / 2;
+
+    rt.pieces.forEach((piece) => {
+        const el = document.createElement('div');
+        el.className = 'puzzle-piece' + (piece.placed ? ' placed' : '');
+        el.appendChild(piece.canvas);
+        if (piece.placed) {
+            el.style.left = (boardLeftPx + piece.targetLeft) + 'px';
+            el.style.top = piece.targetTop + 'px';
+        } else if (piece.trayLeft !== undefined) {
+            el.style.left = piece.trayLeft + 'px';
+            el.style.top = piece.trayTop + 'px';
+        } else {
+            const trayLeft = Math.random() * Math.max(wrap.clientWidth - piece.canvas.width, 40);
+            const trayTop = PUZZLE_BOARD_SIZE + 20 + Math.random() * (trayHeight - piece.canvas.height);
+            piece.trayLeft = trayLeft; piece.trayTop = trayTop;
+            el.style.left = trayLeft + 'px';
+            el.style.top = trayTop + 'px';
+        }
+        wrap.appendChild(el);
+        piece.el = el;
+        if (!piece.placed) attachPieceDrag(el, piece, wrap, boardLeftPx);
+    });
+
+    document.getElementById('puzzle-placed').textContent = rt.placedCount;
+}
+
+function attachPieceDrag(el, piece, wrap, boardLeftPx) {
+    let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
+    el.addEventListener('pointerdown', (e) => {
+        if (piece.placed) return;
+        dragging = true;
+        el.setPointerCapture(e.pointerId);
+        startX = e.clientX; startY = e.clientY;
+        origLeft = parseFloat(el.style.left); origTop = parseFloat(el.style.top);
+        el.style.zIndex = 1000;
+    });
+    el.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startX, dy = e.clientY - startY;
+        el.style.left = (origLeft + dx) + 'px';
+        el.style.top = (origTop + dy) + 'px';
+    });
+    const release = (e) => {
+        if (!dragging) return;
+        dragging = false;
+        el.style.zIndex = '';
+        const curLeft = parseFloat(el.style.left), curTop = parseFloat(el.style.top);
+        const targetLeftPx = boardLeftPx + piece.targetLeft;
+        const dist = Math.hypot(curLeft - targetLeftPx, curTop - piece.targetTop);
+        if (dist < 22) {
+            el.style.left = targetLeftPx + 'px';
+            el.style.top = piece.targetTop + 'px';
+            piece.placed = true;
+            el.classList.add('placed');
+            onPuzzlePiecePlaced();
+        } else {
+            piece.trayLeft = curLeft; piece.trayTop = curTop;
+        }
+    };
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+}
+
+function onPuzzlePiecePlaced() {
+    const rt = puzzleRuntime;
+    rt.placedCount++;
+    document.getElementById('puzzle-placed').textContent = rt.placedCount;
+    const feedback = document.getElementById('puzzle-feedback');
+    feedback.textContent = InfiniteEngine.getFeedback('correct');
+    feedback.className = 'word-feedback success';
+
+    if (rt.placedCount === rt.total) {
+        const points = 60 + state.levels.puzzle * 20;
+        state.scores.puzzle += points; state.scores.total += points;
+        addFlower(); checkLevelUp('puzzle'); updateUI(); saveState();
+        feedback.textContent = `🎉 Picture complete! +${points} points!`;
+        feedback.className = 'word-feedback success';
+        puzzleRuntime = null;
+        setTimeout(() => newPuzzleGame(), 2200);
+    }
+}
+
+function hintPuzzle() {
+    const rt = puzzleRuntime;
+    const feedback = document.getElementById('puzzle-feedback');
+    if (!rt) return;
+    const unplaced = rt.pieces.filter(p => !p.placed);
+    if (unplaced.length === 0) { feedback.textContent = '🎉 Already complete!'; feedback.className = 'word-feedback success'; return; }
+    const piece = unplaced[Math.floor(Math.random() * unplaced.length)];
+    const wrap = document.getElementById('puzzle-board-wrap');
+    const boardLeftPx = (wrap.clientWidth - PUZZLE_BOARD_SIZE) / 2;
+    piece.el.style.left = (boardLeftPx + piece.targetLeft) + 'px';
+    piece.el.style.top = piece.targetTop + 'px';
+    piece.placed = true;
+    piece.el.classList.add('placed');
+    onPuzzlePiecePlaced();
+    feedback.textContent = '💡 Placed one for you!';
+    feedback.className = 'word-feedback success';
 }
 
 // ---- 16. "ALL ABOUT US" QUIZ MODE (new) ----
@@ -1082,10 +1505,19 @@ function initAdultMode() {
     newAdult();
 }
 
+function hintAdult() {
+    if (!state.adult.current) return;
+    const answer = state.adult.current.answer;
+    state.adult.hintsUsed = Math.min((state.adult.hintsUsed || 0) + 1, answer.length - 1);
+    document.getElementById('adult-reveal').textContent = `💡 ${revealMask(answer, state.adult.hintsUsed)} (${answer.length} letters)`;
+}
+
 function newAdult() {
     const puzzle = InfiniteEngine.getAdult();
     state.adult.current = puzzle;
+    state.adult.hintsUsed = 0;
     document.getElementById('adult-puzzle').innerHTML = `<div><div style="font-size:1.4rem; margin-bottom:12px;">😈 Think <span style="color:#FF1493;">naughty</span>...</div><div style="font-size:1.1rem;">${puzzle.question}</div></div>`;
+    document.getElementById('adult-reveal').textContent = '';
     document.getElementById('adult-answer').value = '';
     document.getElementById('adult-answer').focus();
     document.getElementById('adult-feedback').textContent = '';
@@ -1201,230 +1633,4 @@ function showCatMessage() {
     setTimeout(() => { if (popup.parentElement) popup.remove(); }, 3000);
 }
 
-let eggClicks = 0;
-let eggClickTimer = null;
-function triggerEasterEgg() {
-    eggClicks++;
-    if (eggClicks >= 3) {
-        document.getElementById('easter-egg').classList.add('show');
-        eggClicks = 0;
-        if (eggClickTimer) clearTimeout(eggClickTimer);
-        return;
-    }
-    if (eggClickTimer) clearTimeout(eggClickTimer);
-    eggClickTimer = setTimeout(() => { eggClicks = 0; }, 3000);
-}
-
-function closeEasterEgg() { document.getElementById('easter-egg').classList.remove('show'); }
-
-// ---- 22. PWA INSTALL ----
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById('install-btn').style.display = 'block';
-});
-
-function installApp() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => { document.getElementById('install-btn').style.display = 'none'; deferredPrompt = null; });
-    }
-}
-
-// ---- 23. PARTICLES ----
-// FIX: cancelAnimationFrame handle kept + visibility check so the loop
-// doesn't burn battery pointlessly when the tab/app is backgrounded.
-let particleRAF = null;
-function initParticles() {
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
-    let particles = [];
-
-    function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Particle {
-        constructor() { this.reset(); }
-        reset() {
-            this.x = Math.random() * width; this.y = Math.random() * height;
-            this.size = Math.random() * 2 + 0.5;
-            this.speedX = (Math.random() - 0.5) * 0.3; this.speedY = (Math.random() - 0.5) * 0.3;
-            this.opacity = Math.random() * 0.5 + 0.1;
-            this.color = ['#FF1493', '#9400D3', '#FFD700'][Math.floor(Math.random() * 3)];
-        }
-        update() {
-            this.x += this.speedX; this.y += this.speedY;
-            if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) this.reset();
-        }
-        draw() {
-            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = this.color; ctx.globalAlpha = this.opacity; ctx.fill();
-            ctx.shadowColor = this.color; ctx.shadowBlur = 10; ctx.fill();
-            ctx.shadowBlur = 0; ctx.globalAlpha = 1;
-        }
-    }
-
-    for (let i = 0; i < 80; i++) particles.push(new Particle());
-
-    function animate() {
-        if (document.hidden) { particleRAF = requestAnimationFrame(animate); return; }
-        ctx.clearRect(0, 0, width, height);
-        particles.forEach(p => { p.update(); p.draw(); });
-        particleRAF = requestAnimationFrame(animate);
-    }
-    animate();
-}
-
-function createFloatingHearts() {
-    setInterval(() => {
-        if (document.hidden) return;
-        const heart = document.createElement('div');
-        heart.className = 'floating-heart';
-        heart.textContent = ['❤️', '💕', '💗', '💖', '🌙', '⭐', '🔥'][Math.floor(Math.random() * 7)];
-        heart.style.left = Math.random() * 100 + '%';
-        heart.style.fontSize = (Math.random() * 0.8 + 0.5) + 'rem';
-        heart.style.animationDuration = (Math.random() * 10 + 10) + 's';
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 20000);
-    }, 3000);
-}
-
-// ---- 24. MUSIC PLAYER ----
-// FIX (main bug): the old playlist hardcoded filenames that were actually
-// truncated display strings (e.g. "...Everything(.."), which is not a real
-// file and would 404 forever. Now the player loads /music/playlist.json
-// first (a manifest you edit with your real filenames), and only falls
-// back to a placeholder list if that manifest is missing. It also skips
-// a track automatically if a file fails to load, instead of getting stuck.
-const FALLBACK_PLAYLIST = [
-    { name: "Track 1", artist: "Add your song", file: "track1.mp3" }
-];
-
-async function loadPlaylist() {
-    try {
-        const res = await fetch('/music/playlist.json');
-        if (!res.ok) throw new Error('no manifest');
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) return data;
-        throw new Error('empty manifest');
-    } catch (e) {
-        console.log('🎵 No music/playlist.json found yet, using placeholder track. See README.');
-        return FALLBACK_PLAYLIST;
-    }
-}
-
-async function initMusicPlayer() {
-    const PLAYLIST = await loadPlaylist();
-    let currentTrack = 0;
-    let isPlaying = false;
-    let audio = null;
-    let volume = 0.7;
-    let skipAttempts = 0;
-
-    const toggle = document.getElementById('musicToggle');
-    const slider = document.getElementById('volumeSlider');
-    const trackName = document.getElementById('trackName');
-    const prevBtn = document.getElementById('prevTrack');
-    const nextBtn = document.getElementById('nextTrack');
-    const progressBar = document.getElementById('musicProgress');
-
-    function loadTrack(index) {
-        const track = PLAYLIST[index];
-        if (!track) return;
-        currentTrack = index;
-        trackName.textContent = `🎵 ${track.name}${track.artist ? ' - ' + track.artist : ''}`;
-        if (audio) { audio.pause(); audio = null; }
-        try {
-            audio = new Audio(encodeURI(`/music/${track.file}`));
-            audio.volume = volume;
-            audio.addEventListener('ended', () => {
-                const next = currentTrack + 1;
-                loadTrack(next >= PLAYLIST.length ? 0 : next);
-                if (isPlaying) playTrack();
-            });
-            audio.addEventListener('error', () => {
-                const code = audio.error ? audio.error.code : 'unknown';
-                console.error(`🎵 Failed to load: ${audio.src} (MediaError code ${code})`);
-                trackName.textContent = `⚠️ Failed: ${track.file}`;
-                skipAttempts++;
-                if (skipAttempts >= PLAYLIST.length) {
-                    setTimeout(() => { pauseTrack(); trackName.textContent = '🎵 No playable tracks found'; }, 1400);
-                    return;
-                }
-                setTimeout(() => {
-                    const next = currentTrack + 1;
-                    loadTrack(next >= PLAYLIST.length ? 0 : next);
-                    if (isPlaying) playTrack();
-                }, 1400);
-            });
-            audio.addEventListener('timeupdate', () => {
-                if (audio.duration) progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
-                skipAttempts = 0;
-            });
-            if (isPlaying) audio.play().catch(() => {});
-        } catch (e) { console.error('Error loading track:', e); }
-    }
-
-    function playTrack() { isPlaying = true; toggle.textContent = '⏸️'; if (audio) audio.play().catch(() => {}); }
-    function pauseTrack() { isPlaying = false; toggle.textContent = '▶️'; if (audio) audio.pause(); }
-
-    toggle.addEventListener('click', () => { isPlaying ? pauseTrack() : playTrack(); });
-    slider.addEventListener('input', (e) => { volume = e.target.value / 100; if (audio) audio.volume = volume; });
-    prevBtn.addEventListener('click', () => { const p = currentTrack - 1; loadTrack(p < 0 ? PLAYLIST.length - 1 : p); if (isPlaying) playTrack(); });
-    nextBtn.addEventListener('click', () => { const n = currentTrack + 1; loadTrack(n >= PLAYLIST.length ? 0 : n); if (isPlaying) playTrack(); });
-
-    loadTrack(0);
-
-    // FIX: only the play button itself starts playback on first load now
-    // (autoplay-on-any-click was surprising users who tapped a nav button).
-}
-
-// ---- 25. INIT ----
-function init() {
-    loadState();
-    updateUI();
-    renderGarden();
-    showDailyPuzzle();
-    initParticles();
-    createFloatingHearts();
-    initMusicPlayer();
-
-    setTimeout(() => { document.getElementById('loading').classList.add('hidden'); }, 1800);
-
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', () => navigateTo(btn.dataset.page));
-    });
-
-    initWordMode();
-
-    // FIX: persist state before the tab/app is closed, not just after each answer.
-    window.addEventListener('pagehide', saveState);
-    window.addEventListener('beforeunload', saveState);
-}
-
-// ---- 26. GLOBALS (for inline onclick handlers) ----
-window.navigateTo = navigateTo;
-window.checkWord = checkWord;
-window.getNewWord = getNewWord;
-window.newSudoku = newSudoku;
-window.fillNumber = fillNumber;
-window.clearCell = clearCell;
-window.newLogic = newLogic;
-window.checkLogic = checkLogic;
-window.newMemoryGame = newMemoryGame;
-window.restartQuiz = restartQuiz;
-window.newAdult = newAdult;
-window.checkAdult = checkAdult;
-window.closeEasterEgg = closeEasterEgg;
-window.showCatMessage = showCatMessage;
-window.triggerEasterEgg = triggerEasterEgg;
-window.installApp = installApp;
-
-document.addEventListener('DOMContentLoaded', init);
-
-</script>
-</body>
-</html>
+le
