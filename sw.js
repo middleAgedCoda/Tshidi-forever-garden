@@ -163,3 +163,4 @@ self.addEventListener('online', () => {
 self.addEventListener('offline', () => {
     self.clients.matchAll().then((clients) => clients.forEach((client) => client.postMessage({ type: 'OFFLINE' })));
 });
+
