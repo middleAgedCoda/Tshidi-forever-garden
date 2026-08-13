@@ -2,7 +2,7 @@
 // TSHIDI'S FOREVER GARDEN - SERVICE WORKER
 // =============================================
 
-const CACHE_NAME = 'tshidi-garden-v8';
+const CACHE_NAME = 'tshidi-garden-v9';
 const OFFLINE_URL = '/index.html';
 
 const CORE_FILES = [
