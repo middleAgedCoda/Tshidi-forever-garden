@@ -2,15 +2,15 @@
 // TSHIDI'S FOREVER GARDEN - SERVICE WORKER
 // =============================================
 
-const CACHE_NAME = 'tshidi-garden-v9';
-const OFFLINE_URL = '/index.html';
+const CACHE_NAME = 'tshidi-garden-v10';
+const OFFLINE_URL = 'index.html';
 
 const CORE_FILES = [
-    '/',
-    '/index.html',
-    '/sw.js',
-    '/music/playlist.json',
-    '/images/photos.json'
+    './',
+    'index.html',
+    'sw.js',
+    'music/playlist.json',
+    'images/photos.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -33,10 +33,10 @@ self.addEventListener('install', (event) => {
             // song file just gets skipped with a warning, everything else
             // still caches fine.
             try {
-                const manifestRes = await fetch('/music/playlist.json');
+                const manifestRes = await fetch('music/playlist.json');
                 const tracks = await manifestRes.json();
                 await Promise.all(tracks.map(async (track) => {
-                    const url = encodeURI(`/music/${track.file}`);
+                    const url = encodeURI(`music/${track.file}`);
                     try { await cache.add(url); console.log('🎵 Cached', track.file); }
                     catch (err) { console.warn('⚠️ Could not cache track', track.file, err); }
                 }));
@@ -49,10 +49,10 @@ self.addEventListener('install', (event) => {
             // than failing the whole install. An empty/missing manifest is
             // fine — the puzzle falls back to generated placeholder art.
             try {
-                const photosRes = await fetch('/images/photos.json');
+                const photosRes = await fetch('images/photos.json');
                 const photos = await photosRes.json();
                 await Promise.all(photos.map(async (photo) => {
-                    const url = encodeURI(`/images/${photo.file}`);
+                    const url = encodeURI(`images/${photo.file}`);
                     try { await cache.add(url); console.log('🧩 Cached', photo.file); }
                     catch (err) { console.warn('⚠️ Could not cache photo', photo.file, err); }
                 }));
