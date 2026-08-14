@@ -2,13 +2,17 @@
 // TSHIDI'S FOREVER GARDEN - SERVICE WORKER
 // =============================================
 
-const CACHE_NAME = 'tshidi-garden-v10';
+const CACHE_NAME = 'tshidi-garden-v11';
 const OFFLINE_URL = 'index.html';
 
 const CORE_FILES = [
     './',
     'index.html',
     'sw.js',
+    'manifest.json',
+    'icons/icon-192.png',
+    'icons/icon-512.png',
+    'icons/icon-512-maskable.png',
     'music/playlist.json',
     'images/photos.json'
 ];
@@ -163,4 +167,3 @@ self.addEventListener('online', () => {
 self.addEventListener('offline', () => {
     self.clients.matchAll().then((clients) => clients.forEach((client) => client.postMessage({ type: 'OFFLINE' })));
 });
-
