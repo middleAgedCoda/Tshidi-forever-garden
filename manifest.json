@@ -1,0 +1,57 @@
+{
+  "name": "Tshidi's Forever Garden",
+  "short_name": "Forever Garden",
+  "description": "A personalized love game for Tshidi — playable offline forever",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0f",
+  "theme_color": "#FF1493",
+  "categories": ["games", "puzzle", "romance"],
+  "display_override": ["standalone"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Play Word Game",
+      "short_name": "Words",
+      "description": "Play Word Blossom",
+      "url": "./index.html?mode=word",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Play Number Game",
+      "short_name": "Numbers",
+      "description": "Play Number Garden",
+      "url": "./index.html?mode=numbers",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "View Garden",
+      "short_name": "Garden",
+      "description": "View your love garden",
+      "url": "./index.html?mode=garden",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
