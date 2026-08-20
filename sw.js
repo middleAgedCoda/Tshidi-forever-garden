@@ -2,7 +2,7 @@
 // TSHIDI'S FOREVER GARDEN - SERVICE WORKER
 // =============================================
 
-const CACHE_NAME = 'tshidi-garden-v11';
+const CACHE_NAME = 'tshidi-garden-v12';
 const OFFLINE_URL = 'index.html';
 
 const CORE_FILES = [
@@ -65,6 +65,13 @@ self.addEventListener('install', (event) => {
             }
 
             return self.skipWaiting();
+        }).then(() => {
+            // Let any open tabs/app instances know precaching is fully done,
+            // so the UI can show a clear "ready for offline" confirmation
+            // instead of everyone guessing how long to wait.
+            return self.clients.matchAll().then((clients) => {
+                clients.forEach((client) => client.postMessage({ type: 'CACHE_READY' }));
+            });
         })
     );
 });
